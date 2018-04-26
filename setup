@@ -1,0 +1,53 @@
+#!/bin/bash
+
+set -o errexit
+set -o nounset
+
+configfile="${1:-config}"
+test -r ${configfile} || touch ${configfile}
+
+function readConfig() {
+    local varName=$1
+    local defaultValue=${2:-""}
+    local fileValue=$(cat ${configfile} | grep ^"export ${varName}" | cut -d"=" -f2 | tr -d '"')
+    local suggestedValue="${fileValue:-${defaultValue}}"
+    local readValue
+    read -p "${varName}[${suggestedValue}]: " readValue
+    echo "${readValue:-$suggestedValue}"
+}
+
+arm_subscription_id=$(readConfig "ARM_SUBSCRIPTION_ID")
+arm_client_id=$(readConfig "ARM_CLIENT_ID")
+arm_client_secret=$(readConfig "ARM_CLIENT_SECRET")
+arm_tenant_id=$(readConfig "ARM_TENANT_ID")
+
+vnet_resource_group=$(readConfig "VNET_RESOURCE_GROUP")
+vnet_name=$(readConfig "VNET_NAME")
+vnet_gateway_addr=$(readConfig "VNET_GATEWAY_ADDR")
+image_name=$(readConfig "IMAGE_NAME")
+image_resource_group=$(readConfig "IMAGE_RESOURCE_GROUP")
+ssh_public_key=$(readConfig "SSH_PUBLIC_KEY")
+
+cat << VARS > ${configfile}
+##########
+# config #
+##########
+export ARM_SUBSCRIPTION_ID="${arm_subscription_id}"
+export ARM_CLIENT_ID="${arm_client_id}"
+export ARM_CLIENT_SECRET="${arm_client_secret}"
+export ARM_TENANT_ID="${arm_tenant_id}"
+
+export VNET_RESOURCE_GROUP="${vnet_resource_group}"
+export VNET_NAME="${vnet_name}"
+export VNET_GATEWAY_ADDR="${vnet_gateway_addr}"
+export IMAGE_NAME="${image_name}"
+export IMAGE_RESOURCE_GROUP="${image_resource_group}"
+export SSH_PUBLIC_KEY="${ssh_public_key}"
+
+#############
+# terraform #
+#############
+export TF_VAR_vnet="{resource_group = \"${vnet_resource_group}\", name = \"${vnet_name}\", gateway_addr = \"${vnet_gateway_addr}\"}"
+export TF_VAR_image="{name = \"${image_name}\", resource_group = \"${image_resource_group}\"}"
+export TF_VAR_ssh_public_key="${ssh_public_key}"
+VARS
