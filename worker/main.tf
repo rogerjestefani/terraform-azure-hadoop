@@ -26,6 +26,8 @@ resource "azurerm_network_interface" "worker" {
   location            = "${local.location}"
   resource_group_name = "${local.resource_group}"
 
+  internal_dns_name_label = "${format("%s-%03d", local.name, count.index+1)}"
+
   ip_configuration {
     name                          = "${format("%s-%03d-ipconfig", local.name, count.index + 1)}"
     subnet_id                     = "${local.subnet_id}"
