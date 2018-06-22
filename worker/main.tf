@@ -124,7 +124,7 @@ resource "azurerm_virtual_machine" "worker" {
     name            = "${element(azurerm_managed_disk.volume_03.*.name, count.index)}"
     managed_disk_id = "${element(azurerm_managed_disk.volume_03.*.id, count.index)}"
     create_option   = "Attach"
-    lun             = 1
+    lun             = 2
     caching         = "ReadOnly"
     disk_size_gb    = "${element(azurerm_managed_disk.volume_03.*.disk_size_gb, count.index)}"
   }
@@ -133,7 +133,7 @@ resource "azurerm_virtual_machine" "worker" {
     name            = "${element(azurerm_managed_disk.volume_04.*.name, count.index)}"
     managed_disk_id = "${element(azurerm_managed_disk.volume_04.*.id, count.index)}"
     create_option   = "Attach"
-    lun             = 1
+    lun             = 3
     caching         = "ReadOnly"
     disk_size_gb    = "${element(azurerm_managed_disk.volume_04.*.disk_size_gb, count.index)}"
   }
