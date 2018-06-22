@@ -63,10 +63,10 @@ resource "azurerm_managed_disk" "volume_03" {
   name          = "${format("%s-%03d-datadisk-03", local.name, count.index + 1)}"
   location      = "${local.location}"
   create_option = "Empty"
-  disk_size_gb  = "${lookup(local.data_disk[1], "disk_size_gb")}"
+  disk_size_gb  = "${lookup(local.data_disk[2], "disk_size_gb")}"
 
   resource_group_name  = "${local.resource_group}"
-  storage_account_type = "${lookup(local.data_disk[1], "storage_account_type")}"
+  storage_account_type = "${lookup(local.data_disk[2], "storage_account_type")}"
 }
 
 resource "azurerm_managed_disk" "volume_04" {
@@ -74,10 +74,10 @@ resource "azurerm_managed_disk" "volume_04" {
   name          = "${format("%s-%03d-datadisk-04", local.name, count.index + 1)}"
   location      = "${local.location}"
   create_option = "Empty"
-  disk_size_gb  = "${lookup(local.data_disk[1], "disk_size_gb")}"
+  disk_size_gb  = "${lookup(local.data_disk[3], "disk_size_gb")}"
 
   resource_group_name  = "${local.resource_group}"
-  storage_account_type = "${lookup(local.data_disk[1], "storage_account_type")}"
+  storage_account_type = "${lookup(local.data_disk[3], "storage_account_type")}"
 }
 
 resource "azurerm_virtual_machine" "worker" {
