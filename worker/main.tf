@@ -58,6 +58,28 @@ resource "azurerm_managed_disk" "volume_02" {
   storage_account_type = "${lookup(local.data_disk[1], "storage_account_type")}"
 }
 
+resource "azurerm_managed_disk" "volume_03" {
+  count         = "${local.number_of_workers}"
+  name          = "${format("%s-%03d-datadisk-03", local.name, count.index + 1)}"
+  location      = "${local.location}"
+  create_option = "Empty"
+  disk_size_gb  = "${lookup(local.data_disk[1], "disk_size_gb")}"
+
+  resource_group_name  = "${local.resource_group}"
+  storage_account_type = "${lookup(local.data_disk[1], "storage_account_type")}"
+}
+
+resource "azurerm_managed_disk" "volume_04" {
+  count         = "${local.number_of_workers}"
+  name          = "${format("%s-%03d-datadisk-04", local.name, count.index + 1)}"
+  location      = "${local.location}"
+  create_option = "Empty"
+  disk_size_gb  = "${lookup(local.data_disk[1], "disk_size_gb")}"
+
+  resource_group_name  = "${local.resource_group}"
+  storage_account_type = "${lookup(local.data_disk[1], "storage_account_type")}"
+}
+
 resource "azurerm_virtual_machine" "worker" {
   count                 = "${local.number_of_workers}"
   name                  = "${format("%s-%03d-vm", local.name, count.index+1)}"
@@ -96,6 +118,24 @@ resource "azurerm_virtual_machine" "worker" {
     lun             = 1
     caching         = "ReadOnly"
     disk_size_gb    = "${element(azurerm_managed_disk.volume_02.*.disk_size_gb, count.index)}"
+  }
+
+  storage_data_disk {
+    name            = "${element(azurerm_managed_disk.volume_03.*.name, count.index)}"
+    managed_disk_id = "${element(azurerm_managed_disk.volume_03.*.id, count.index)}"
+    create_option   = "Attach"
+    lun             = 1
+    caching         = "ReadOnly"
+    disk_size_gb    = "${element(azurerm_managed_disk.volume_03.*.disk_size_gb, count.index)}"
+  }
+
+  storage_data_disk {
+    name            = "${element(azurerm_managed_disk.volume_04.*.name, count.index)}"
+    managed_disk_id = "${element(azurerm_managed_disk.volume_04.*.id, count.index)}"
+    create_option   = "Attach"
+    lun             = 1
+    caching         = "ReadOnly"
+    disk_size_gb    = "${element(azurerm_managed_disk.volume_04.*.disk_size_gb, count.index)}"
   }
 
   os_profile {
